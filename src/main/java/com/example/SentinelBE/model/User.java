@@ -48,8 +48,8 @@ public class User {
     @ManyToMany(mappedBy = "reporters")
     private List<Executable> reportedExecutables = new ArrayList<>();
 
-    @OneToMany(mappedBy = "author")
-    private List<Post> posts;
+    //@OneToMany(mappedBy = "author")
+    //private List<Post> posts;
 
     @OneToMany(mappedBy = "user")
     private List<Scan> scans;
@@ -58,8 +58,8 @@ public class User {
     @Column(nullable = false, name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = true, name = "last_login")
-    private LocalDateTime lastLogin;
+    //@Column(nullable = true, name = "last_login")
+    //private LocalDateTime lastLogin;
 
 
 }

@@ -15,10 +15,10 @@ public record UserDTO(
         int totalScans,
         int uniqueExecutablesScanned,
         int totalReports,
-        int totalPosts,
-        ScanDTO lastScan,
-        LocalDateTime createdAt,
-        LocalDateTime lastLogin
+        //int totalPosts,
+        //ScanDTO lastScan,
+        LocalDateTime createdAt
+        //LocalDateTime lastLogin
 
 
 ) {

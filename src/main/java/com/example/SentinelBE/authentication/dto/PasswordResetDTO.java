@@ -1,4 +1,6 @@
 package com.example.SentinelBE.authentication.dto;
 
-public record PasswordResetDTO(String token, String password) {
+import com.example.SentinelBE.authentication.validation.ValidPassword;
+
+public record PasswordResetDTO(String token, @ValidPassword String password) {
 }

@@ -47,12 +47,13 @@ public class Executable {
     @Column(precision = 5, scale = 4)
     private BigDecimal score;
 
+    private String label;
 
     @OneToMany(mappedBy = "executable")
     private List<Scan> scans;
 
-    @OneToOne(mappedBy = "executable")
-    private Discussion discussions;
+    //@OneToOne(mappedBy = "executable")
+    //private Discussion discussions;
 
     @CreationTimestamp
     @Column(nullable = false, name = "first_detection", updatable = false)

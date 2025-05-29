@@ -1,12 +1,12 @@
 package com.example.SentinelBE.controller;
 
 
-import com.example.SentinelBE.authentication.dto.ChangePasswordDTO;
-import com.example.SentinelBE.authentication.dto.ModifyUserDTO;
+import com.example.SentinelBE.authentication.dto.ChangePasswordDto;
+import com.example.SentinelBE.authentication.dto.ModifyUserDto;
 import com.example.SentinelBE.service.UserService;
 import com.example.SentinelBE.utils.Result;
 import com.example.SentinelBE.utils.converter.UserDtoConverter;
-import com.example.SentinelBE.utils.dto.UserDTO;
+import com.example.SentinelBE.utils.dto.UserDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,8 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -34,7 +32,7 @@ public class UserController {
     )
     @GetMapping()
     @Transactional
-    public Result<UserDTO> getUser() {
+    public Result<UserDto> getUser() {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         var user = userDtoConverter.createFromEntity(this.userService.getUserByUsername(username));
         return new Result<>(true, HttpStatus.OK.value(), "Details about user served.", user);
@@ -45,7 +43,7 @@ public class UserController {
             description = "Updates a given user's password based on the username; requires old password for security and new password."
     )
     @PutMapping("/password")
-    public Result<?> changePassword(@RequestBody @Valid ChangePasswordDTO changePasswordDto) {
+    public Result<?> changePassword(@RequestBody @Valid ChangePasswordDto changePasswordDto) {
         this.userService.changePassword(changePasswordDto);
         return new Result<>(true, HttpStatus.OK.value(), "Password changed.", null);
     }
@@ -55,10 +53,10 @@ public class UserController {
             description = "Updates a given user's fields based on the username; returns the updated user."
     )
     @PutMapping("/{userId}/modify")
-    public Result<UserDTO> modifyUser(@PathVariable Long userId, @RequestBody ModifyUserDTO modifyUserDto){
+    public Result<UserDto> modifyUser(@PathVariable Long userId, @RequestBody ModifyUserDto modifyUserDto){
         var user = userDtoConverter.createFromModifyUserDto(modifyUserDto);
         user.setId(userId);
-        UserDTO userDto = userDtoConverter.createFromEntity(userService.updateUser(user));
+        UserDto userDto = userDtoConverter.createFromEntity(userService.updateUser(user));
         return new Result<>(true, HttpStatus.OK.value(), "User updated successfully.", userDto);
     }
 

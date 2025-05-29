@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
 
-public record ExecutableDTO(
+public record ExecutableDto(
         Long id,
         String name,
         String label,

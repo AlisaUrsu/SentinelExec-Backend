@@ -3,8 +3,8 @@ package com.example.SentinelBE.controller;
 
 import com.example.SentinelBE.authentication.converter.RegistrationUserDtoConverter;
 import com.example.SentinelBE.authentication.dto.LoginRequest;
-import com.example.SentinelBE.authentication.dto.PasswordResetDTO;
-import com.example.SentinelBE.authentication.dto.RegistrationUserDTO;
+import com.example.SentinelBE.authentication.dto.PasswordResetDto;
+import com.example.SentinelBE.authentication.dto.RegistrationUserDto;
 import com.example.SentinelBE.security.auth.AuthenticationService;
 import com.example.SentinelBE.security.recovery.RecoveryService;
 import com.example.SentinelBE.security.registration.RegistrationService;
@@ -12,7 +12,6 @@ import com.example.SentinelBE.security.user.SecurityUser;
 import com.example.SentinelBE.service.UserService;
 import com.example.SentinelBE.utils.Result;
 import com.example.SentinelBE.utils.converter.UserDtoConverter;
-import com.example.SentinelBE.utils.dto.UserDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,13 +23,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtException;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -75,7 +72,7 @@ public class AuthController {
             summary = "Registration endpoint. After registering it sends an email with confirmation token."
     )
     @PostMapping("/register")
-    public Result<?> register(@RequestBody @Valid RegistrationUserDTO registrationUserDto) {
+    public Result<?> register(@RequestBody @Valid RegistrationUserDto registrationUserDto) {
         try {
             this.registrationService.addUser(this.registrationUserDtoConverter.createFromDto(registrationUserDto));
         } catch (Exception e){
@@ -120,7 +117,7 @@ public class AuthController {
             summary = "Input new password along with the token provided in email."
     )
     @PutMapping("/reset-password")
-    public Result<?> resetPassword(@RequestBody @Valid PasswordResetDTO passwordResetDto) {
+    public Result<?> resetPassword(@RequestBody @Valid PasswordResetDto passwordResetDto) {
         this.recoveryService.resetPassword(passwordResetDto);
         return new Result<>(true, HttpStatus.OK.value(), "Password reset successfully", null);
     }

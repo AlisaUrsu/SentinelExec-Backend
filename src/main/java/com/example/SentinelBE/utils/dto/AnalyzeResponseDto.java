@@ -2,7 +2,7 @@ package com.example.SentinelBE.utils.dto;
 
 import java.util.Map;
 
-public record AnalyzeResponseDTO(
+public record AnalyzeResponseDto(
         String file,
         double score,
         String label,

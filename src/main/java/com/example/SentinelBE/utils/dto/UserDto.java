@@ -6,7 +6,7 @@ import com.example.SentinelBE.model.Role;
 
 import java.time.LocalDateTime;
 
-public record UserDTO(
+public record UserDto(
         long id,
         String username,
         String email,

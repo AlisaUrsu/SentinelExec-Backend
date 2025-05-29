@@ -4,10 +4,9 @@ import com.example.SentinelBE.controller.utils.HelperMethods;
 import com.example.SentinelBE.model.Executable;
 import com.example.SentinelBE.service.ExecutableService;
 import com.example.SentinelBE.utils.Result;
-import com.example.SentinelBE.utils.converter.ExecutableDTOConverter;
-import com.example.SentinelBE.utils.converter.ExecutableSummaryConverter;
-import com.example.SentinelBE.utils.dto.ExecutableDTO;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import com.example.SentinelBE.utils.converter.ExecutableDtoConverter;
+import com.example.SentinelBE.utils.converter.ExecutableSummaryDtoConverter;
+import com.example.SentinelBE.utils.dto.ExecutableDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,8 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -28,8 +25,8 @@ import java.util.Map;
 @Tag(name = "Executable Management")
 public class ExecutableController {
     private final ExecutableService executableService;
-    private final ExecutableSummaryConverter executableSummaryConverter;
-    private final ExecutableDTOConverter executableDTOConverter;
+    private final ExecutableSummaryDtoConverter executableSummaryDtoConverter;
+    private final ExecutableDtoConverter executableDTOConverter;
 
     @GetMapping
     public Result<Map<String, Object>> getExecutables(
@@ -38,17 +35,19 @@ public class ExecutableController {
             //@RequestParam(required = false) Long executableId,
             @RequestParam(required = false) String executableName
     ) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Order.desc("updatedAt")));
         Page<Executable> executables = executableService.findAllByCriteria(executableName, pageable);
-        Map<String, Object> response = HelperMethods.makeResponse(executables, executableSummaryConverter);
+        Map<String, Object> response = HelperMethods.makeResponse(executables, executableSummaryDtoConverter);
         return new Result<>(true, HttpStatus.OK.value(), "Retrieved all executables based on given params", response);
     }
 
 
-    @GetMapping("/{id}")
-    public Result<ExecutableDTO> getExec(@PathVariable Long id) {
-        var executable = executableService.getExecutable(id);
-        var executableDTO = executableDTOConverter.createFromEntity(executable);
-        return new Result<>(true, HttpStatus.OK.value(), "Retrived executable.", executableDTO);
+
+
+    @GetMapping("/{sha256}")
+    public Result<ExecutableDto> getExecutableBySha256(@PathVariable String sha256) {
+        Executable executable = executableService.getExecutableByHash(sha256);
+        ExecutableDto executableDto = executableDTOConverter.createFromEntity(executable);
+        return new Result<>(true, HttpStatus.OK.value(), "Retrieved executable", executableDto);
     }
 }

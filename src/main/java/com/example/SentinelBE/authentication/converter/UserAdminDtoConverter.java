@@ -1,15 +1,15 @@
 package com.example.SentinelBE.authentication.converter;
 
 
-import com.example.SentinelBE.authentication.dto.UserAdminDTO;
+import com.example.SentinelBE.authentication.dto.UserAdminDto;
 import com.example.SentinelBE.model.User;
 import com.example.SentinelBE.utils.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserAdminDtoConverter implements Converter<User, UserAdminDTO> {
+public class UserAdminDtoConverter implements Converter<User, UserAdminDto> {
     @Override
-    public User createFromDto(UserAdminDTO dto) {
+    public User createFromDto(UserAdminDto dto) {
         return User.builder()
                 .id(dto.id())
                 .username(dto.username())
@@ -21,8 +21,8 @@ public class UserAdminDtoConverter implements Converter<User, UserAdminDTO> {
     }
 
     @Override
-    public UserAdminDTO createFromEntity(User entity) {
-        return new UserAdminDTO(
+    public UserAdminDto createFromEntity(User entity) {
+        return new UserAdminDto(
                 entity.getId(),
                 entity.getUsername(),
                 entity.getEmail(),

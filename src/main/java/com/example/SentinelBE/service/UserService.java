@@ -2,8 +2,8 @@ package com.example.SentinelBE.service;
 
 
 
-import com.example.SentinelBE.authentication.dto.ChangePasswordDTO;
-import com.example.SentinelBE.authentication.dto.EnableUserDTO;
+import com.example.SentinelBE.authentication.dto.ChangePasswordDto;
+import com.example.SentinelBE.authentication.dto.EnableUserDto;
 import com.example.SentinelBE.model.Role;
 import com.example.SentinelBE.model.User;
 
@@ -17,7 +17,7 @@ public interface UserService {
     List<User> getUsers();
     User getUserByUsername(String username);
     User getUserById(long id);
-    void changePassword(ChangePasswordDTO changePasswordDto);
-    void enableUser(EnableUserDTO enableUserDto);
+    void changePassword(ChangePasswordDto changePasswordDto);
+    void enableUser(EnableUserDto enableUserDto);
 
 }

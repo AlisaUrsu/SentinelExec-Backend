@@ -2,18 +2,16 @@ package com.example.SentinelBE.authentication.converter;
 
 
 
-import com.example.SentinelBE.authentication.dto.RegistrationUserDTO;
+import com.example.SentinelBE.authentication.dto.RegistrationUserDto;
 import com.example.SentinelBE.model.User;
 import com.example.SentinelBE.utils.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
-
 @Component
-public class RegistrationUserDtoConverter implements Converter<User, RegistrationUserDTO> {
+public class RegistrationUserDtoConverter implements Converter<User, RegistrationUserDto> {
 
     @Override
-    public User createFromDto(RegistrationUserDTO dto) {
+    public User createFromDto(RegistrationUserDto dto) {
         return User.builder()
                 .username(dto.getUsername())
                 .hashedPassword(dto.getPassword())
@@ -23,7 +21,7 @@ public class RegistrationUserDtoConverter implements Converter<User, Registratio
     }
 
     @Override
-    public RegistrationUserDTO createFromEntity(User entity) {
+    public RegistrationUserDto createFromEntity(User entity) {
         return null;
     }
 }

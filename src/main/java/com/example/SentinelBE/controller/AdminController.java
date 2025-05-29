@@ -2,8 +2,8 @@ package com.example.SentinelBE.controller;
 
 
 import com.example.SentinelBE.authentication.converter.UserAdminDtoConverter;
-import com.example.SentinelBE.authentication.dto.EnableUserDTO;
-import com.example.SentinelBE.authentication.dto.UserAdminDTO;
+import com.example.SentinelBE.authentication.dto.EnableUserDto;
+import com.example.SentinelBE.authentication.dto.UserAdminDto;
 import com.example.SentinelBE.service.UserService;
 import com.example.SentinelBE.utils.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,7 +31,7 @@ public class AdminController {
     )
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public Result<List<UserAdminDTO>> getAllUsers() {
+    public Result<List<UserAdminDto>> getAllUsers() {
         var users = this.userAdminDtoConverter.createFromEntities(this.userService.getUsers());
         return new Result<>(true, HttpStatus.OK.value(), "Here is a list of all the users.", users);
     }
@@ -42,7 +42,7 @@ public class AdminController {
     )
     @GetMapping("/users/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public Result<UserAdminDTO> getUser(@PathVariable long id) {
+    public Result<UserAdminDto> getUser(@PathVariable long id) {
         var user = this.userAdminDtoConverter.createFromEntity(this.userService.getUserById(id));
         return new Result<>(true, HttpStatus.OK.value(), String.format("Here is the user with id: %d", id), user);
     }
@@ -53,7 +53,7 @@ public class AdminController {
     )
     @PutMapping("/users/enable")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public Result<?> enableUser(@RequestBody EnableUserDTO enableUserDto) {
+    public Result<?> enableUser(@RequestBody EnableUserDto enableUserDto) {
         this.userService.enableUser(enableUserDto);
         return new Result<>(true, HttpStatus.OK.value(), String.format("User %s enabled/disabled.", enableUserDto.username()));
     }

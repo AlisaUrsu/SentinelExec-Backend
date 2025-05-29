@@ -41,7 +41,7 @@ public class ExecutableServiceImpl implements ExecutableService{
             excutableValidator.validate(executable);
             return executableRepository.save(executable);
         } catch (Exception e) {
-            throw new RuntimeException("Error adding post: " + e.getMessage());
+            throw new RuntimeException("Error adding executable: " + e.getMessage());
         }
     }
 
@@ -49,14 +49,14 @@ public class ExecutableServiceImpl implements ExecutableService{
     @Transactional
     public Executable updateExecutable(Executable executable) {
         var updatedExecutable = executableRepository.findById(executable.getId()).orElseThrow(
-                () -> new EntityNotFoundException(String.format("Post with id %d not found", executable.getId()))
+                () -> new EntityNotFoundException(String.format("Executable with id %d not found", executable.getId()))
         );
 
         try{
             excutableValidator.validate(updatedExecutable);
             return executableRepository.save(updatedExecutable);
         } catch (Exception e) {
-            throw new RuntimeException("Error updating post: " + e.getMessage());
+            throw new RuntimeException("Error updating executable: " + e.getMessage());
         }
     }
 
@@ -99,11 +99,11 @@ public class ExecutableServiceImpl implements ExecutableService{
             }
 
             //predicates.add(criteriaBuilder.isNotEmpty(root.get("reporters")));
+            Predicate isReported = criteriaBuilder.isNotNull(root.get("firstReport"));
+            predicates.add(isReported);
 
 
-            if(predicates.isEmpty() || query == null) return null;
-            query.where(predicates.toArray(new Predicate[0]));
-            return query.getRestriction();
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
         Page<Executable> found = executableRepository.findAll(specification, pageable);
         found.forEach(executable -> {
@@ -112,5 +112,14 @@ public class ExecutableServiceImpl implements ExecutableService{
 
         });
         return found;
+    }
+
+    @Override
+    @Transactional
+    public Executable getExecutableByHash(String hash) {
+        Executable executable = executableRepository.findBySha256InRawFeatures(hash).orElseThrow(
+                () -> new EntityNotFoundException("Executable not found"));Hibernate.initialize(executable.getReporters());
+
+        return executable;
     }
 }

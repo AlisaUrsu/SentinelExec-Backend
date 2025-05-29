@@ -1,7 +1,7 @@
 package com.example.SentinelBE.utils.converter;
 
 import com.example.SentinelBE.model.Executable;
-import com.example.SentinelBE.utils.dto.ExecutableSummaryDTO;
+import com.example.SentinelBE.utils.dto.ExecutableSummaryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -10,9 +10,9 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class ExecutableSummaryConverter implements Converter<Executable, ExecutableSummaryDTO> {
+public class ExecutableSummaryDtoConverter implements Converter<Executable, ExecutableSummaryDto> {
     @Override
-    public ExecutableSummaryDTO createFromEntity(Executable entity) {
+    public ExecutableSummaryDto createFromEntity(Executable entity) {
         Map<String, Object> rawFeatures = entity.getRawFeatures();
         String sha256 = rawFeatures != null ? (String) rawFeatures.get("sha256") : null;
 
@@ -23,7 +23,7 @@ public class ExecutableSummaryConverter implements Converter<Executable, Executa
                 size = ((Number) sizeObj).longValue();
             }
         }
-        return new ExecutableSummaryDTO(
+        return new ExecutableSummaryDto(
                 entity.getId(),
                 entity.getName(),
                 entity.getLabel(),
@@ -37,7 +37,7 @@ public class ExecutableSummaryConverter implements Converter<Executable, Executa
     }
 
     @Override
-    public Executable createFromDto(ExecutableSummaryDTO dto) {
+    public Executable createFromDto(ExecutableSummaryDto dto) {
         Executable executable = new Executable();
         executable.setName(dto.name());
         executable.setLabel(dto.label());

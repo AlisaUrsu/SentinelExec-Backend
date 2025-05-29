@@ -2,7 +2,7 @@ package com.example.SentinelBE.utils.dto;
 
 import java.time.LocalDateTime;
 
-public record DiscussionDTO(
+public record DiscussionDto(
         Long id,
         Long executableId,
         String title,

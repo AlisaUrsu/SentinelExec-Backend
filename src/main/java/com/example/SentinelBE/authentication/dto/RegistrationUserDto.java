@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @Getter
-public class RegistrationUserDTO {
+public class RegistrationUserDto {
     private String username;
     @ValidPassword
     private String password;

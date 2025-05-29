@@ -8,15 +8,13 @@ import com.example.SentinelBE.service.ExecutableService;
 import com.example.SentinelBE.service.ScanService;
 import com.example.SentinelBE.service.UserService;
 import com.example.SentinelBE.utils.Result;
-import com.example.SentinelBE.utils.converter.ScanDTOConverter;
-import com.example.SentinelBE.utils.converter.ScanExcutableDTOConverter;
-import com.example.SentinelBE.utils.converter.UserDtoConverter;
-import com.example.SentinelBE.utils.dto.AnalyzeResponseDTO;
-import com.example.SentinelBE.utils.dto.ScanDTO;
-import com.example.SentinelBE.utils.dto.ScanExecutableDTO;
+import com.example.SentinelBE.utils.converter.ExecutableDtoConverter;
+import com.example.SentinelBE.utils.converter.ScanDtoConverter;
+import com.example.SentinelBE.utils.converter.ScanExcutableDtoConverter;
+import com.example.SentinelBE.utils.dto.AnalyzeResponseDto;
+import com.example.SentinelBE.utils.dto.ScanDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,7 +32,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,11 +45,11 @@ public class ScanController {
     private final ExecutableService executableService;
     private final UserService userService;
     private final ScanService scanService;
-    private final ScanExcutableDTOConverter scanExcutableDTOConverter;
-    private final ScanDTOConverter scanDTOConverter;
+    private final ExecutableDtoConverter executableDtoConverter;
+    private final ScanDtoConverter scanDtoConverter;
 
     @PostMapping("/analyze")
-    public Result<ScanDTO> scanFile(@RequestParam("file") MultipartFile file) throws IOException {
+    public Result<ScanDto> scanFile(@RequestParam("file") MultipartFile file) throws IOException {
         var user = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         System.out.println(user);
         HttpHeaders headers = new HttpHeaders();
@@ -72,58 +69,34 @@ public class ScanController {
         // Call Flask API
         RestTemplate restTemplate = new RestTemplate();
         String flaskUrl = "http://127.0.0.1:5000/analyze";
-        ResponseEntity<AnalyzeResponseDTO> response = restTemplate.postForEntity(flaskUrl, requestEntity, AnalyzeResponseDTO.class);
+        ResponseEntity<AnalyzeResponseDto> response = restTemplate.postForEntity(flaskUrl, requestEntity, AnalyzeResponseDto.class);
 
-        Executable executable = Executable.builder()
-                .name(response.getBody().file())
-                .label(response.getBody().label())
-                .rawFeatures(response.getBody().rawFeatures())
-                .score(BigDecimal.valueOf(response.getBody().score()))
-                .firstDetection(LocalDateTime.now())
-                .reporters(new HashSet<>())
-                .build();
+        AnalyzeResponseDto responseDto = response.getBody();
+        Executable executable = executableDtoConverter.createFromAnalyzeResponse(responseDto);
         executableService.addExecutable(executable);
 
-        Scan scan = Scan.builder()
-                .user(user)
-                .executable(executable)
-                .score(BigDecimal.valueOf(response.getBody().score()))
-                .label(response.getBody().label())
-                .content(response.getBody().message())
-                .reported(false)
-                .build();
 
-        var scanToShow = scanDTOConverter.createFromEntity(scanService.addScan(scan));
-        // Return raw JSON or parse as needed
-        return new Result<>(true, HttpStatus.OK.value(), "File analyzed.", scanToShow);
+        Scan scan = scanDtoConverter.createFromAnalyzeResponse(responseDto);
+        scan.setUser(user);
+        scan.setExecutable(executable);
+
+        var scanDto = scanDtoConverter.createFromEntity(scanService.addScan(scan));
+
+        return new Result<>(true, HttpStatus.OK.value(), "File analyzed.", scanDto);
     }
 
     @PutMapping ("/report/{id}")
-    public Result<ScanDTO> reportScan(@PathVariable Long id) {
-        Scan scan = scanService.getScan(id);
-        var user = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
-        scan.setReported(true);
-        Executable executable = scan.getExecutable();
-        //Hibernate.initialize(executable.getReporters());
-        Set<User> reporters = executable.getReporters();
+    public Result<ScanDto> reportScan(@PathVariable Long id) {
+        User user = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        Scan scan = scanService.reportScan(id, user);
+        ScanDto scanDto = scanDtoConverter.createFromEntity(scanService.addScan(scan));
 
-        if (reporters == null) {
-            reporters = new HashSet<>();
-            executable.setReporters(reporters);
-        }
-
-        reporters.add(user);
-        executable.setFirstReport(LocalDateTime.now());
-        executableService.addExecutable(executable);
-        //Hibernate.initialize(executable.getReporters());
-        ScanDTO scanDTO = scanDTOConverter.createFromEntity(scanService.addScan(scan));
-
-        return new Result<>(true, HttpStatus.OK.value(), "File reported.", scanDTO);
+        return new Result<>(true, HttpStatus.OK.value(), "File reported.", scanDto);
     }
 
     @GetMapping("/{id}")
-    public Result<ScanDTO> getScan(@PathVariable Long id) {
-        ScanDTO scanDTO = scanDTOConverter.createFromEntity(scanService.getScan(id));
+    public Result<ScanDto> getScan(@PathVariable Long id) {
+        ScanDto scanDTO = scanDtoConverter.createFromEntity(scanService.getScan(id));
 
         return new Result<>(true, HttpStatus.OK.value(), "Scan retrieved.", scanDTO);
     }
@@ -138,9 +111,9 @@ public class ScanController {
             @RequestParam(required = false) String user
 
     ) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Order.desc("scannedAt")));
         Page<Scan> posts = scanService.findAllByCriteria( label, filename, isReported, user, pageable);
-        Map<String, Object> response = HelperMethods.makeResponse(posts, scanDTOConverter);
+        Map<String, Object> response = HelperMethods.makeResponse(posts, scanDtoConverter);
         return new Result<>(true, HttpStatus.OK.value(), "Retrieved all scans based on given params", response);
     }
 }

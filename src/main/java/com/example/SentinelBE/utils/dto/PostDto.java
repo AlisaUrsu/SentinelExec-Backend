@@ -2,7 +2,7 @@ package com.example.SentinelBE.utils.dto;
 
 import java.time.LocalDateTime;
 
-public record PostDTO(
+public record PostDto(
         Long id,
         String content,
         Long parentId,

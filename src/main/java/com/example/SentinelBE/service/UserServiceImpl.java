@@ -1,7 +1,7 @@
 package com.example.SentinelBE.service;
 
-import com.example.SentinelBE.authentication.dto.ChangePasswordDTO;
-import com.example.SentinelBE.authentication.dto.EnableUserDTO;
+import com.example.SentinelBE.authentication.dto.ChangePasswordDto;
+import com.example.SentinelBE.authentication.dto.EnableUserDto;
 import com.example.SentinelBE.authentication.exception.PasswordMissmatchException;
 import com.example.SentinelBE.authentication.exception.UserServiceException;
 import com.example.SentinelBE.model.Role;
@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void changePassword(ChangePasswordDTO changePasswordDto) {
+    public void changePassword(ChangePasswordDto changePasswordDto) {
         var user = this.getUserByUsername(changePasswordDto.username());
         if (passwordEncoder.matches(changePasswordDto.oldPassword(), user.getHashedPassword())){
             user.setHashedPassword(passwordEncoder.encode(changePasswordDto.newPassword()));
@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void enableUser(EnableUserDTO enableUserDto) {
+    public void enableUser(EnableUserDto enableUserDto) {
         var user = this.getUserByUsername(enableUserDto.username());
         user.setEnabled(enableUserDto.isEnabled());
         this.userRepository.save(user);

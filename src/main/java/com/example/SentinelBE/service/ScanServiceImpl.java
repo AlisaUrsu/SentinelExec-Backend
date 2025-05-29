@@ -2,6 +2,8 @@ package com.example.SentinelBE.service;
 
 import com.example.SentinelBE.model.Executable;
 import com.example.SentinelBE.model.Scan;
+import com.example.SentinelBE.model.User;
+import com.example.SentinelBE.repository.ExecutableRepository;
 import com.example.SentinelBE.repository.ScanRepository;
 import com.example.SentinelBE.utils.validation.GenericValidator;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,17 +15,17 @@ import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
 public class ScanServiceImpl implements ScanService{
     private final ScanRepository scanRepository;
+    private final ExecutableRepository executableRepository;
     private final GenericValidator<Scan> validator;
     @Override
     public Scan addScan(Scan scan) {
@@ -91,4 +93,28 @@ public class ScanServiceImpl implements ScanService{
         Hibernate.initialize(retrievedScan.getExecutable().getScans());
         return retrievedScan;
     }
+
+    @Override
+    @Transactional
+    public Scan reportScan(Long scanId, User user) {
+        Scan scan = getScan(scanId);
+        scan.setReported(true);
+
+        Executable executable = scan.getExecutable();
+        Set<User> reporters = executable.getReporters();
+
+        if (reporters == null) {
+            reporters = new HashSet<>();
+            executable.setReporters(reporters);
+        }
+
+        if (reporters.add(user)) {
+            executable.setFirstReport(LocalDateTime.now());
+            executable.setUpdatedAt(LocalDateTime.now());
+        }
+
+        executableRepository.save(executable);
+        return addScan(scan);
+    }
+
 }

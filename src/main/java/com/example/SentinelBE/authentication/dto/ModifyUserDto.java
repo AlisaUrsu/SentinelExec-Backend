@@ -1,7 +1,6 @@
 package com.example.SentinelBE.authentication.dto;
 
-public record EnableUserDTO(
+public record ModifyUserDto(
         String username,
-        boolean isEnabled
-) {
-}
+        String profilePicture
+) {}

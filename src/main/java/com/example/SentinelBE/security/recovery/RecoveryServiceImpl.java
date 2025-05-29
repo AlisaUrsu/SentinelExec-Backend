@@ -2,7 +2,7 @@ package com.example.SentinelBE.security.recovery;
 
 
 
-import com.example.SentinelBE.authentication.dto.PasswordResetDTO;
+import com.example.SentinelBE.authentication.dto.PasswordResetDto;
 import com.example.SentinelBE.authentication.email.EmailService;
 import com.example.SentinelBE.repository.UserRepository;
 
@@ -77,7 +77,7 @@ public class RecoveryServiceImpl implements RecoveryService {
 
     @Override
     @Transactional
-    public void resetPassword(PasswordResetDTO passwordResetDto){
+    public void resetPassword(PasswordResetDto passwordResetDto){
         var token = tokenService.getToken(passwordResetDto.token());
         var user = token.getUser();
         user.setHashedPassword(passwordEncoder.encode(passwordResetDto.password()));

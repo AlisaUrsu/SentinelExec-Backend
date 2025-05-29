@@ -1,22 +1,18 @@
 package com.example.SentinelBE.utils.converter;
 
 
-import com.example.SentinelBE.authentication.dto.ModifyUserDTO;
+import com.example.SentinelBE.authentication.dto.ModifyUserDto;
 import com.example.SentinelBE.model.Scan;
 import com.example.SentinelBE.model.User;
-import com.example.SentinelBE.utils.dto.UserDTO;
-import jakarta.persistence.EntityNotFoundException;
+import com.example.SentinelBE.utils.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
 @Component
 @RequiredArgsConstructor
-public class UserDtoConverter implements Converter<User, UserDTO> {
+public class UserDtoConverter implements Converter<User, UserDto> {
     @Override
-    public User createFromDto(UserDTO dto) {
+    public User createFromDto(UserDto dto) {
 
         return User.builder()
                 .id(dto.id())
@@ -28,7 +24,7 @@ public class UserDtoConverter implements Converter<User, UserDTO> {
     }
 
     @Override
-    public UserDTO createFromEntity(User entity) {
+    public UserDto createFromEntity(User entity) {
         int uniqueExecutablesScanned = (int) entity.getScans().stream()
                 .map(scan -> scan.getExecutable().getId())
                 .distinct()
@@ -36,7 +32,7 @@ public class UserDtoConverter implements Converter<User, UserDTO> {
         int totalReports = (int) entity.getScans().stream()
                 .filter(Scan::isReported)
                 .count();
-        return new UserDTO(
+        return new UserDto(
                 entity.getId(),
                 entity.getUsername(),
                 entity.getEmail(),
@@ -51,7 +47,7 @@ public class UserDtoConverter implements Converter<User, UserDTO> {
         );
     }
 
-    public User createFromModifyUserDto(ModifyUserDTO modifyUserDto) {
+    public User createFromModifyUserDto(ModifyUserDto modifyUserDto) {
         return User.builder()
                 .username(modifyUserDto.username())
                 .profilePicture(ByteStringConverter.base64ToByteArray(modifyUserDto.profilePicture()))

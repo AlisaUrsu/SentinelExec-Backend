@@ -1,6 +1,6 @@
 package com.example.SentinelBE.utils.dto;
 
-public record CreatePostDTO(
+public record CreatePostDto(
         Long discussionId,
         String content,
         Long parentId,

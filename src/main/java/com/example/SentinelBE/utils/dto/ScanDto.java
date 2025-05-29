@@ -3,10 +3,10 @@ package com.example.SentinelBE.utils.dto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public record ScanDTO(
+public record ScanDto(
         Long id,
         Long userId,
-        ScanExecutableDTO executableDTO,
+        ScanExecutableDto executableDTO,
         BigDecimal score,
         String label,
         boolean reported,

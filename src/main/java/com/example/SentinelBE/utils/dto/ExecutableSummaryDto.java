@@ -2,10 +2,8 @@ package com.example.SentinelBE.utils.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Set;
 
-public record ExecutableSummaryDTO(
+public record ExecutableSummaryDto(
         Long id,
         String name,
         String label,

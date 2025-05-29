@@ -3,7 +3,7 @@ package com.example.SentinelBE.authentication.dto;
 
 import com.example.SentinelBE.model.Role;
 
-public record UserAdminDTO(
+public record UserAdminDto(
         long id,
         String username,
         String email,

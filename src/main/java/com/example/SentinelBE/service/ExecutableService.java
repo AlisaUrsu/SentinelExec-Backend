@@ -21,4 +21,6 @@ public interface ExecutableService {
     @Transactional
     Page<Executable> findAllByCriteria(String executableName, Pageable pageable);
 
+    @Transactional
+    Executable getExecutableByHash(String hash);
 }

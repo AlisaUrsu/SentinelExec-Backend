@@ -33,6 +33,15 @@ public class ExecutableServiceImpl implements ExecutableService{
             if (executable == null) {
                 throw new IllegalArgumentException("Executable cannot be null");
             }
+            String sha256 = (String) executable.getRawFeatures().get("sha256");
+            Optional<Executable> existingExec = executableRepository.findBySha256InRawFeatures(sha256);
+
+            if (existingExec.isPresent()) {
+                Executable exec = existingExec.get();
+                exec.setUpdatedAt(LocalDateTime.now());
+                return executableRepository.save(exec);
+            }
+
             if (executable.getFirstDetection() == null) {
                 executable.setFirstDetection(LocalDateTime.now());
             }
@@ -86,7 +95,7 @@ public class ExecutableServiceImpl implements ExecutableService{
 
     @Override
     @Transactional
-    public Page<Executable> findAllByCriteria(String executableName, Pageable pageable) {
+    public Page<Executable> findAllByCriteria(String executableName, String label, Pageable pageable) {
         // use specification and criteria builder
         Specification<Executable> specification = (root, query, criteriaBuilder) -> {
             // predicates for partial search
@@ -96,6 +105,10 @@ public class ExecutableServiceImpl implements ExecutableService{
             //}
             if (executableName != null) {
                 predicates.add(criteriaBuilder.like(root.get("name"), "%" + executableName + "%"));
+            }
+
+            if (label != null) {
+                predicates.add(criteriaBuilder.equal(root.get("label"), label));
             }
 
             //predicates.add(criteriaBuilder.isNotEmpty(root.get("reporters")));

@@ -85,6 +85,12 @@ public class ExceptionHandlerAdvice {
         return new Result<>(false, HttpStatus.NOT_ACCEPTABLE.value(), "Input was invalid.", ex.getMessage());
     }
 
+    @ExceptionHandler(DuplicateUserException.class)
+    public Result<String> handleDuplicateUser(DuplicateUserException ex) {
+        return new Result<>(false, 400, ex.getMessage(), null);
+    }
+
+
     @ExceptionHandler(PasswordMissmatchException.class)
     @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
     Result<String> handleUserServiceException(PasswordMissmatchException ex) {

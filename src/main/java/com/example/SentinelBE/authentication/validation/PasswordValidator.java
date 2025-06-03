@@ -20,12 +20,10 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Str
             return false;
         }
 
-        // Check the minimum length
         if (password.length() < minLength) {
             return false;
         }
 
-        // Check the pattern
         return password.matches(pattern);
     }
 }

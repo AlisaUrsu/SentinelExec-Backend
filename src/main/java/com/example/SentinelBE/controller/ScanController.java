@@ -10,9 +10,9 @@ import com.example.SentinelBE.service.UserService;
 import com.example.SentinelBE.utils.Result;
 import com.example.SentinelBE.utils.converter.ExecutableDtoConverter;
 import com.example.SentinelBE.utils.converter.ScanDtoConverter;
-import com.example.SentinelBE.utils.converter.ScanExcutableDtoConverter;
 import com.example.SentinelBE.utils.dto.AnalyzeResponseDto;
 import com.example.SentinelBE.utils.dto.ScanDto;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
@@ -29,17 +29,13 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.endpoint.base-url}/scans")
-//@SecurityRequirement(name = "bearerAuth")
+@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Scan Management")
 public class ScanController {
     private final ExecutableService executableService;
@@ -51,7 +47,6 @@ public class ScanController {
     @PostMapping("/analyze")
     public Result<ScanDto> scanFile(@RequestParam("file") MultipartFile file) throws IOException {
         var user = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
-        System.out.println(user);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
@@ -73,7 +68,7 @@ public class ScanController {
 
         AnalyzeResponseDto responseDto = response.getBody();
         Executable executable = executableDtoConverter.createFromAnalyzeResponse(responseDto);
-        executableService.addExecutable(executable);
+        executable = executableService.addExecutable(executable);
 
 
         Scan scan = scanDtoConverter.createFromAnalyzeResponse(responseDto);

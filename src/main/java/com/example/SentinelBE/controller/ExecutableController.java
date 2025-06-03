@@ -7,6 +7,7 @@ import com.example.SentinelBE.utils.Result;
 import com.example.SentinelBE.utils.converter.ExecutableDtoConverter;
 import com.example.SentinelBE.utils.converter.ExecutableSummaryDtoConverter;
 import com.example.SentinelBE.utils.dto.ExecutableDto;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,7 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.endpoint.base-url}/executables")
-//@SecurityRequirement(name = "bearerAuth")
+@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Executable Management")
 public class ExecutableController {
     private final ExecutableService executableService;
@@ -32,11 +33,11 @@ public class ExecutableController {
     public Result<Map<String, Object>> getExecutables(
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "100") int pageSize,
-            //@RequestParam(required = false) Long executableId,
-            @RequestParam(required = false) String executableName
+            @RequestParam(required = false) String executableName,
+            @RequestParam(required = false) String label
     ) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Order.desc("updatedAt")));
-        Page<Executable> executables = executableService.findAllByCriteria(executableName, pageable);
+        Page<Executable> executables = executableService.findAllByCriteria(executableName, label, pageable);
         Map<String, Object> response = HelperMethods.makeResponse(executables, executableSummaryDtoConverter);
         return new Result<>(true, HttpStatus.OK.value(), "Retrieved all executables based on given params", response);
     }

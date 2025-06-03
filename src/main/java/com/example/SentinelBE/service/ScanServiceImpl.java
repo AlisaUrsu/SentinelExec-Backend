@@ -108,10 +108,16 @@ public class ScanServiceImpl implements ScanService{
             executable.setReporters(reporters);
         }
 
-        if (reporters.add(user)) {
-            executable.setFirstReport(LocalDateTime.now());
-            executable.setUpdatedAt(LocalDateTime.now());
+        // Only add first report time if user is reporting for the first time
+        boolean isNewReporter = reporters.add(user);
+
+        if (isNewReporter) {
+            if (executable.getFirstReport() == null) {
+                executable.setFirstReport(LocalDateTime.now());
+            }
         }
+
+        executable.setUpdatedAt(LocalDateTime.now());
 
         executableRepository.save(executable);
         return addScan(scan);

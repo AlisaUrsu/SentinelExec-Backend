@@ -19,7 +19,7 @@ public interface ExecutableService {
     Executable getExecutable(long executableId);
 
     @Transactional
-    Page<Executable> findAllByCriteria(String executableName, Pageable pageable);
+    Page<Executable> findAllByCriteria(String executableName, String label, Pageable pageable);
 
     @Transactional
     Executable getExecutableByHash(String hash);

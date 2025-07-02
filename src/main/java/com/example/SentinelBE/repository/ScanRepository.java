@@ -1,5 +1,6 @@
 package com.example.SentinelBE.repository;
 
+import com.example.SentinelBE.model.Executable;
 import com.example.SentinelBE.model.Scan;
 import com.example.SentinelBE.model.User;
 import org.springframework.data.domain.Page;
@@ -7,7 +8,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,4 +19,7 @@ public interface ScanRepository extends JpaRepository<Scan, Long>, JpaSpecificat
     public Page<Scan> findAll(Specification<Scan> specification, Pageable pageable);
     public Optional<Scan> findById(long id);
     public List<Scan> findByUser(User user);
+    @Query("SELECT AVG(s.score) FROM Scan s WHERE s.executable = :executable")
+    BigDecimal findAverageScoreByExecutable(@Param("executable") Executable executable);
+
 }

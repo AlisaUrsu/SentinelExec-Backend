@@ -39,6 +39,8 @@ public class ExecutableServiceImpl implements ExecutableService{
             if (existingExec.isPresent()) {
                 Executable exec = existingExec.get();
                 exec.setUpdatedAt(LocalDateTime.now());
+                exec.setLabel(executable.getLabel());
+                exec.setScore(executable.getScore());
                 return executableRepository.save(exec);
             }
 

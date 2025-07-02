@@ -63,7 +63,7 @@ public class ScanController {
 
         // Call Flask API
         RestTemplate restTemplate = new RestTemplate();
-        String flaskUrl = "http://127.0.0.1:5000/analyze";
+        String flaskUrl = "https://sentinel-exec-models-852b46e87dfb.herokuapp.com/analyze";
         ResponseEntity<AnalyzeResponseDto> response = restTemplate.postForEntity(flaskUrl, requestEntity, AnalyzeResponseDto.class);
 
         AnalyzeResponseDto responseDto = response.getBody();
